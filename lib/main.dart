@@ -3,8 +3,9 @@ import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:alarm_demo/setAlarm.dart';
 import 'package:alarm_demo/homescreen.dart';
+
 void main() => runApp(MyApp());
-void printHello() async{
+void printHello() async {
   print("Ima ");
   final DateTime now = DateTime.now();
   await print("[$now] Hello, world! isolate function");
@@ -41,46 +42,46 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-    List alarmtime=[];
-    List alarmlabel=[];
+  List alarmtime = [];
+  List alarmlabel = [];
 
-    void initState() {
-      super.initState();
-       initial();
+  void initState() {
+    super.initState();
+    initial();
+  }
+
+  initial() async {
+    final prefs = await SharedPreferences.getInstance();
+    final prefKeys = await prefs.getKeys();
+    if (prefKeys.isEmpty) {
+      print("NO alram");
+    }
+    if (prefKeys.isNotEmpty) {
+      for (String i in prefKeys) {
+        final value = await prefs.getInt(i);
+        await alarmlabel.add(i);
+        await alarmtime.add(value);
+
+        print(i);
+        print(value);
+      }
     }
 
-      initial() async{
-        final prefs = await SharedPreferences.getInstance();
-        final prefKeys = await prefs.getKeys();
-        if(prefKeys.isEmpty){
-          print("NO alram");
-        }
-        if(prefKeys.isNotEmpty){
-          for (String i in prefKeys){
-            final value = await prefs.getInt(i);
-           await alarmlabel.add(i);
-            await alarmtime.add(value);
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) =>
+            new homes(alarmtime: alarmtime, alarmlabel: alarmlabel)));
+  }
 
-            print(i);
-            print(value);
-          }
-        }
-        Navigator.of(context).push(
-            MaterialPageRoute(
-                builder:(_)=> new homes(alarmtime:alarmtime, alarmlabel:alarmlabel)
-            )
-        );
-      }
-  void _incrementCounter() async{
+  void _incrementCounter() async {
     print("i st");
     await AndroidAlarmManager.initialize();
-    await AndroidAlarmManager.oneShotAt(new DateTime(0,0,0,0,5,0,0), 0, await printHello);
-
+    await AndroidAlarmManager.oneShotAt(
+        new DateTime(0, 0, 0, 0, 5, 0, 0), 0, await printHello);
   }
 
   @override
   Widget build(BuildContext context) {
-      print("Build is called");
+    print("Build is called");
     return Container(
       color: Colors.blue,
     );
