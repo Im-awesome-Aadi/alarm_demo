@@ -13,7 +13,7 @@ class homes extends StatefulWidget {
 }
 
 class _homesState extends State<homes> {
-  AudioPlayer audioPlayer1 = AudioPlayer();
+//  AudioPlayer audioPlayer1 = AudioPlayer();
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +50,9 @@ class _homesState extends State<homes> {
                       Icons.play_arrow,
                     ),
                     onPressed: () async {
-                      await audioPlayer1.play(
-                          "/storage/emulated/0/Android/data/shashankgupta.notificationdemo/files/Ringtones/Closer.mp3",
-                          isLocal: true);
+//                      await audioPlayer1.play(
+//                          "/storage/emulated/0/Android/data/shashankgupta.notificationdemo/files/Ringtones/Closer.mp3",
+//                          isLocal: true);
                     },
                   ),
                   IconButton(
@@ -60,7 +60,7 @@ class _homesState extends State<homes> {
                       Icons.stop,
                     ),
                     onPressed: () async {
-                      await audioPlayer1.stop();
+//                      await audioPlayer1.stop();
                     },
                   ),
                 ],

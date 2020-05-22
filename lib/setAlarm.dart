@@ -23,7 +23,7 @@ class setAlarm extends StatefulWidget {
 }
 
 class _setAlarmState extends State<setAlarm> {
-  AudioPlayer audioPlayer = AudioPlayer();
+//  AudioPlayer audioPlayer = AudioPlayer();
 
   FlutterAudioRecorder _recorder;
   Recording _current;
@@ -37,7 +37,7 @@ class _setAlarmState extends State<setAlarm> {
   }
 
   Future<String> platformPath() async {
-    String customPath = '/flutter_audio_recorder_shashank4';
+    String customPath = '/flutter_audio_recorder_shashank6';
     Directory appDocDirectory;
 //        io.Directory appDocDirectory = await getApplicationDocumentsDirectory();
     if (Platform.isIOS) {
@@ -186,23 +186,23 @@ class _setAlarmState extends State<setAlarm> {
                 print(recording.status);
               },
             ),
-            RaisedButton(
-              child: Text("Play Recorded"),
-              onPressed: () async {
-                String path = await platformPath();
-                isPlay = await audioPlayer.play(
-                    "/storage/emulated/0/Android/data/com.aditya25dev.alarm_demo/files/flutter_audio_recorder_shashank4.wav",
-                    isLocal: true);
-                print(isPlay);
-              },
-            ),
-            RaisedButton(
-              child: Text("Stop Recorded"),
-              onPressed: () async {
-                isPlay = await audioPlayer.stop();
-                print(isPlay);
-              },
-            ),
+//            RaisedButton(
+//              child: Text("Play Recorded"),
+//              onPressed: () async {
+//                String path = await platformPath();
+//                isPlay = await audioPlayer.play(
+//                    "/storage/emulated/0/Android/data/com.aditya25dev.alarm_demo/files/flutter_audio_recorder_shashank4.wav",
+//                    isLocal: true);
+//                print(isPlay);
+//              },
+//            ),
+//            RaisedButton(
+//              child: Text("Stop Recorded"),
+//              onPressed: () async {
+//                isPlay = await audioPlayer.stop();
+//                print(isPlay);
+//              },
+//            ),
             SizedBox(
               height: 25,
             ),
@@ -264,7 +264,7 @@ void printHello() async {
   AudioPlayer audioPlayer2 = AudioPlayer();
 
   await audioPlayer2.play(
-      "/storage/emulated/0/Android/data/com.aditya25dev.alarm_demo/files/flutter_audio_recorder_shashank4.wav",
+      "/storage/emulated/0/Android/data/com.aditya25dev.alarm_demo/files/flutter_audio_recorder_shashank6.wav",
       isLocal: true);
   final DateTime now = DateTime.now();
   await print("[$now] Hello, world! isolate function");
