@@ -37,7 +37,7 @@ class _setAlarmState extends State<setAlarm> {
   }
 
   Future<String> platformPath() async {
-    String customPath = '/flutter_audio_recorder_';
+    String customPath = '/flutter_audio_recorder_shashank4';
     Directory appDocDirectory;
 //        io.Directory appDocDirectory = await getApplicationDocumentsDirectory();
     if (Platform.isIOS) {
@@ -93,13 +93,14 @@ class _setAlarmState extends State<setAlarm> {
     print(minutediff);
     print(hourdiff);
     await AndroidAlarmManager.initialize();
-    await AndroidAlarmManager.oneShot(
-      new Duration(
-        seconds: givenTime.difference(DateTime.now()).inSeconds,
-      ),
-      givenTime.hour * 100 + givenTime.minute,
-      printHello,
-    );
+    await AndroidAlarmManager.periodic(
+        new Duration(hours: 24
+//        seconds: givenTime.difference(DateTime.now()).inSeconds,
+            ),
+        givenTime.hour * 100 + givenTime.minute,
+        printHello,
+        startAt: DateTime(DateTime.now().year, DateTime.now().month,
+            DateTime.now().day, givenTime.hour, givenTime.minute, 0, 0, 0));
   }
 
   TextEditingController label = TextEditingController();
@@ -190,7 +191,7 @@ class _setAlarmState extends State<setAlarm> {
               onPressed: () async {
                 String path = await platformPath();
                 isPlay = await audioPlayer.play(
-                    "/storage/emulated/0/Android/data/com.aditya25dev.alarm_demo/files/flutter_audio_recorder_.wav",
+                    "/storage/emulated/0/Android/data/com.aditya25dev.alarm_demo/files/flutter_audio_recorder_shashank4.wav",
                     isLocal: true);
                 print(isPlay);
               },
@@ -260,7 +261,11 @@ void printHello() async {
   await flutterLocalNotificationsPlugin.show(
       0, "New Video is out", "Flutter Local Notification", platform,
       payload: "You have clicked notification");
+  AudioPlayer audioPlayer2 = AudioPlayer();
 
+  await audioPlayer2.play(
+      "/storage/emulated/0/Android/data/com.aditya25dev.alarm_demo/files/flutter_audio_recorder_shashank4.wav",
+      isLocal: true);
   final DateTime now = DateTime.now();
   await print("[$now] Hello, world! isolate function");
 }
