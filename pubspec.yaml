@@ -27,8 +27,8 @@ dependencies:
   intl: ^0.16.1
   http: ^0.12.1
   path_provider: ^1.6.8
-
-  audioplayers: ^0.14.2
+  simple_permissions: ^0.1.9
+  audioplayers: ^0.15.1
   flutter_audio_recorder: ^0.5.5
 
 dev_dependencies:

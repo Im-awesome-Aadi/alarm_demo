@@ -6,14 +6,15 @@ import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
-import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-
+import 'package:simple_permissions/simple_permissions.dart';
 import 'dart:async';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:audioplayers/audioplayers.dart';
 
+
+var filename='/alarm_${DateTime.now().hour.toString()+DateTime.now().minute.toString()}';
 class setAlarm extends StatefulWidget {
   setAlarm({this.name, this.time});
   final name;
@@ -28,16 +29,17 @@ class _setAlarmState extends State<setAlarm> {
   FlutterAudioRecorder _recorder;
   Recording _current;
   RecordingStatus _currentStatus = RecordingStatus.Unset;
-
+  var weekdays=[1,1,1,1,1,1,1];
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    initRecorder();
+ //   initRecorder();
+
   }
 
-  Future<String> platformPath() async {
-    String customPath = '/flutter_audio_recorder_shashank6';
+  /*Future<String> platformPath() async {
+    String customPath = '/flutter_audio_aditya';
     Directory appDocDirectory;
 //        io.Directory appDocDirectory = await getApplicationDocumentsDirectory();
     if (Platform.isIOS) {
@@ -67,7 +69,7 @@ class _setAlarmState extends State<setAlarm> {
       _currentStatus = current.status;
       print(_currentStatus);
     });
-  }
+  }*/
 
   Future onSelectNotification(String payload) async {
     debugPrint("payload:$payload");
@@ -81,23 +83,18 @@ class _setAlarmState extends State<setAlarm> {
   }
 
   void setTimer(DateTime givenTime) async {
-    print(givenTime);
-    print(DateTime.now());
+
     print(givenTime.difference(DateTime.now()));
-    var minutediff = givenTime.difference(DateTime.now()).inMinutes;
-    var hourdiff = givenTime.difference(DateTime.now()).inHours;
-    print("i st");
-    print(givenTime.minute);
-    print(givenTime.hour);
-    print(givenTime.hour * 100 + givenTime.minute);
-    print(minutediff);
-    print(hourdiff);
+    int id=int.parse((givenAlarmTime.hour * 100 + givenAlarmTime.minute).toString() + conv(weekdays));
+    print(id);
+    print(id.bitLength);
+
     await AndroidAlarmManager.initialize();
     await AndroidAlarmManager.periodic(
         new Duration(hours: 24
 //        seconds: givenTime.difference(DateTime.now()).inSeconds,
-            ),
-        givenTime.hour * 100 + givenTime.minute,
+        ),
+        id,
         printHello,
         startAt: DateTime(DateTime.now().year, DateTime.now().month,
             DateTime.now().day, givenTime.hour, givenTime.minute, 0, 0, 0));
@@ -105,7 +102,7 @@ class _setAlarmState extends State<setAlarm> {
 
   TextEditingController label = TextEditingController();
   DateFormat format = DateFormat("yyyy-MM-dd HH:mm");
-  DateTime currentTime = DateTime.now();
+  DateTime givenAlarmTime = DateTime.now();
 
   int isPlay;
 
@@ -160,7 +157,7 @@ class _setAlarmState extends State<setAlarm> {
                           currentValue ?? DateTime.now()),
                     );
                     setState(() {
-                      currentTime = DateTimeField.combine(date, time);
+                      givenAlarmTime = DateTimeField.combine(date, time);
                     });
 
                     return DateTimeField.combine(date, time);
@@ -173,7 +170,31 @@ class _setAlarmState extends State<setAlarm> {
             IconButton(
               icon: Icon(Icons.play_arrow),
               onPressed: () async {
+                String aa=conv(weekdays);
+                String customPath = '/${givenAlarmTime.hour.toString()+givenAlarmTime.minute.toString()}'+aa;
+                Directory appDocDirectory;
+                if (Platform.isIOS) {
+                  appDocDirectory = await getApplicationDocumentsDirectory();
+                } else {
+                  appDocDirectory = await getExternalStorageDirectory();
+                }
+
+                customPath = appDocDirectory.path + customPath;
+                print("Custom path is ${customPath}");
+                _recorder = FlutterAudioRecorder(customPath, audioFormat: AudioFormat.WAV);
+
+                await _recorder.initialized;
+                // after initialization
+                var current = await _recorder.current(channel: 0);
+                print(current);
+                // should be "Initialized", if all working fine
+                setState(() {
+                  _current = current;
+                  _currentStatus = current.status;
+                  print(_currentStatus);
+                });
                 _recorder.start();
+                await SimplePermissions.requestPermission(Permission.RecordAudio);
                 var recording = await _recorder.current(channel: 0);
                 print(recording.status);
               },
@@ -209,9 +230,12 @@ class _setAlarmState extends State<setAlarm> {
             FlatButton(
               onPressed: () async {
                 if (label.text != "") {
-                  setTimer(currentTime);
+                  setTimer(givenAlarmTime);
                   await addAlarm(
-                      label.text, currentTime.hour * 100 + currentTime.minute);
+                      label.text, int.parse(
+                      (givenAlarmTime.hour * 100 + givenAlarmTime.minute).toString() + conv(weekdays)
+                  )
+                  );
                   Navigator.of(context).pop();
                 }
               },
@@ -237,10 +261,12 @@ class _setAlarmState extends State<setAlarm> {
   }
 }
 
-void printHello() async {
+void printHello(int a ) async {
   print("Ima ");
+  print(a);
+  print(a.runtimeType);
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  FlutterLocalNotificationsPlugin();
   var androids = AndroidInitializationSettings('bvplogo');
   var iOS = IOSInitializationSettings();
   var initializationSettings = InitializationSettings(androids, iOS);
@@ -262,10 +288,30 @@ void printHello() async {
       0, "New Video is out", "Flutter Local Notification", platform,
       payload: "You have clicked notification");
   AudioPlayer audioPlayer2 = AudioPlayer();
-
+var p ="/storage/emulated/0/Android/data/com.aditya25dev.alarm_demo/files/" +"${a.toString()}" + ".wav";
+print("I called $p");
   await audioPlayer2.play(
-      "/storage/emulated/0/Android/data/com.aditya25dev.alarm_demo/files/flutter_audio_recorder_shashank6.wav",
+      p,
       isLocal: true);
   final DateTime now = DateTime.now();
   await print("[$now] Hello, world! isolate function");
+}
+
+
+ conv(input){
+  print('converting it');
+  String output="";
+
+  for(int i =0;i<input.length;i++){
+    if(input[i]==1)
+    {
+      output=output+ i.toString();
+    }
+  }
+  if(output=="0123456"){
+    return "7";
+  }
+  else{
+    return output;
+  }
 }
