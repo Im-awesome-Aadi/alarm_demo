@@ -265,36 +265,79 @@ void printHello(int a ) async {
   print("Ima ");
   print(a);
   print(a.runtimeType);
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
-  var androids = AndroidInitializationSettings('bvplogo');
-  var iOS = IOSInitializationSettings();
-  var initializationSettings = InitializationSettings(androids, iOS);
-  flutterLocalNotificationsPlugin.initialize(
-    initializationSettings,
-  );
+  var schedule=a.toString().substring(3,);
+  if(schedule=="7"){
 
-  var android = AndroidNotificationDetails(
-    "channelID",
-    "channelName",
-    "channelDescription",
-    playSound: true,
-    enableLights: true,
-    enableVibration: true,
-  );
-  var ios = await IOSNotificationDetails();
-  var platform = await NotificationDetails(android, ios);
-  await flutterLocalNotificationsPlugin.show(
-      0, "New Video is out", "Flutter Local Notification", platform,
-      payload: "You have clicked notification");
-  AudioPlayer audioPlayer2 = AudioPlayer();
-var p ="/storage/emulated/0/Android/data/com.aditya25dev.alarm_demo/files/" +"${a.toString()}" + ".wav";
-print("I called $p");
-  await audioPlayer2.play(
-      p,
-      isLocal: true);
-  final DateTime now = DateTime.now();
-  await print("[$now] Hello, world! isolate function");
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+    var androids = AndroidInitializationSettings('bvplogo');
+    var iOS = IOSInitializationSettings();
+    var initializationSettings = InitializationSettings(androids, iOS);
+    flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+    );
+
+    var android = AndroidNotificationDetails(
+      "channelID",
+      "channelName",
+      "channelDescription",
+      playSound: true,
+      enableLights: true,
+      enableVibration: true,
+    );
+    var ios = await IOSNotificationDetails();
+    var platform = await NotificationDetails(android, ios);
+    await flutterLocalNotificationsPlugin.show(
+        0, "New Video is out", "Flutter Local Notification", platform,
+        payload: "You have clicked notification");
+    AudioPlayer audioPlayer2 = AudioPlayer();
+    var p ="/storage/emulated/0/Android/data/com.aditya25dev.alarm_demo/files/" +"${a.toString()}" + ".wav";
+    print("I called $p");
+    await audioPlayer2.play(
+        p,
+        isLocal: true);
+    final DateTime now = DateTime.now();
+    await print("[$now] Hello, world! isolate function");
+  }
+  else{
+    schedule.runes.forEach((int rune)  async{
+      var character = new String.fromCharCode(rune);
+      if(DateTime.now().weekday==int.parse(character)){
+
+        FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+        var androids = AndroidInitializationSettings('bvplogo');
+        var iOS = IOSInitializationSettings();
+        var initializationSettings = InitializationSettings(androids, iOS);
+        flutterLocalNotificationsPlugin.initialize(
+          initializationSettings,
+        );
+
+        var android = AndroidNotificationDetails(
+          "channelID",
+          "channelName",
+          "channelDescription",
+          playSound: true,
+          enableLights: true,
+          enableVibration: true,
+        );
+        var ios = await IOSNotificationDetails();
+        var platform = await NotificationDetails(android, ios);
+        await flutterLocalNotificationsPlugin.show(
+            0, "New Video is out", "Flutter Local Notification", platform,
+            payload: "You have clicked notification");
+        AudioPlayer audioPlayer2 = AudioPlayer();
+        var p ="/storage/emulated/0/Android/data/com.aditya25dev.alarm_demo/files/" +"${a.toString()}" + ".wav";
+        print("I called $p");
+        await audioPlayer2.play(
+            p,
+            isLocal: true);
+        final DateTime now = DateTime.now();
+        await print("[$now] Hello, world! isolate function");
+      }
+      // print(character);
+    });
+  }
 }
 
 
