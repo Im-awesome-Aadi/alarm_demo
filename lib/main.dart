@@ -67,9 +67,11 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
 
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) =>
-            new homes(alarmtime: alarmtime, alarmlabel: alarmlabel)));
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => new homes(alarmtime: alarmtime, alarmlabel: alarmlabel),
+      ),
+    );
   }
 
   void _incrementCounter() async {
