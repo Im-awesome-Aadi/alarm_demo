@@ -3,32 +3,27 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:android_alarm_manager/android_alarm_manager.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-//import 'package:simple_permissions/simple_permissions.dart';
 import 'dart:async';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'callingNotification.dart';
+
 
 var filename =
     '/alarm_${DateTime.now().hour.toString() + DateTime.now().minute.toString()}';
 
-class setAlarm extends StatefulWidget {
-  setAlarm({this.name, this.time});
+class SetAlarm extends StatefulWidget {
+  SetAlarm({this.name, this.time});
   final name;
   final time;
   @override
-  _setAlarmState createState() => _setAlarmState();
+  _SetAlarmState createState() => _SetAlarmState();
 }
 
-class _setAlarmState extends State<setAlarm> {
-//  AudioPlayer audioPlayer = AudioPlayer();
-
-  DateTime currentTime = DateTime.now();
-
+class _SetAlarmState extends State<SetAlarm> {
   FlutterAudioRecorder _recorder;
   Recording _current;
   RecordingStatus _currentStatus = RecordingStatus.Unset;
@@ -39,39 +34,6 @@ class _setAlarmState extends State<setAlarm> {
     super.initState();
     //   initRecorder();
   }
-
-  /*Future<String> platformPath() async {
-    String customPath = '/flutter_audio_aditya';
-    Directory appDocDirectory;
-//        io.Directory appDocDirectory = await getApplicationDocumentsDirectory();
-    if (Platform.isIOS) {
-      appDocDirectory = await getApplicationDocumentsDirectory();
-    } else {
-      appDocDirectory = await getExternalStorageDirectory();
-    }
-
-    // can add extension like ".mp4" ".wav" ".m4a" ".aac"
-    customPath = appDocDirectory.path + customPath;
-    print(customPath);
-    return customPath;
-  }
-
-  initRecorder() async {
-    String customPath = await platformPath();
-
-    _recorder = FlutterAudioRecorder(customPath, audioFormat: AudioFormat.WAV);
-
-    await _recorder.initialized;
-    // after initialization
-    var current = await _recorder.current(channel: 0);
-    print(current);
-    // should be "Initialized", if all working fine
-    setState(() {
-      _current = current;
-      _currentStatus = current.status;
-      print(_currentStatus);
-    });
-  }*/
 
   Future onSelectNotification(String payload) async {
     debugPrint("payload:$payload");
@@ -94,13 +56,14 @@ class _setAlarmState extends State<setAlarm> {
 
     await AndroidAlarmManager.initialize();
     await AndroidAlarmManager.periodic(
-        new Duration(hours: 24
+      new Duration(hours: 24
 //        seconds: givenTime.difference(DateTime.now()).inSeconds,
-            ),
-        id,
-        printHello,
-        startAt: DateTime(DateTime.now().year, DateTime.now().month,
-            DateTime.now().day, givenTime.hour, givenTime.minute, 0, 0, 0));
+          ),
+      id,
+      callingNotification,
+      startAt: DateTime(DateTime.now().year, DateTime.now().month,
+          DateTime.now().day, givenTime.hour, givenTime.minute, 0, 0, 0),
+    );
   }
 
   TextEditingController label = TextEditingController();
@@ -152,47 +115,20 @@ class _setAlarmState extends State<setAlarm> {
                       final time = await showTimePicker(
                         context: context,
                         initialTime: TimeOfDay.fromDateTime(
-                            currentTime ?? DateTime.now()),
+                            givenAlarmTime ?? DateTime.now()),
                       );
-                      setState(() {
-                        currentTime =
-                            DateTimeField.combine(DateTime.now(), time);
+                      setState(
+                        () {
+                          givenAlarmTime =
+                              DateTimeField.combine(DateTime.now(), time);
 
-                        isClicked = true;
-                      });
+                          isClicked = true;
+                        },
+                      );
                     },
                     child: Text("Set Alarm"),
                   ),
-                  Text("${currentTime.hour} : ${currentTime.minute}"),
-//                  Flexible(
-//                    flex: 3,
-//                    child: DateTimeField(
-//                      onChanged: (date) {
-//                        setState(() {
-//                          isClicked = true;
-//                        });
-//                      },
-//                      initialValue: DateTime.now(),
-//                      format: format,
-//                      onShowPicker: (context, currentValue) async {
-//                        final date = DateTime.now();
-//                        if (date != null) {
-//                          final time = await showTimePicker(
-//                            context: context,
-//                            initialTime: TimeOfDay.fromDateTime(
-//                                currentValue ?? DateTime.now()),
-//                          );
-//                          setState(() {
-//                            currentTime = DateTimeField.combine(date, time);
-//                          });
-//
-//                          return DateTimeField.combine(date, time);
-//                        } else {
-//                          return currentValue;
-//                        }
-//                      },
-//                    ),
-//                  ),
+                  Text("${givenAlarmTime.hour} : ${givenAlarmTime.minute}"),
                 ],
               ),
             ),
@@ -200,23 +136,6 @@ class _setAlarmState extends State<setAlarm> {
               height: 25,
             ),
 
-//            RaisedButton(
-//              child: Text("Play Recorded"),
-//              onPressed: () async {
-//                String path = await platformPath();
-//                isPlay = await audioPlayer.play(
-//                    "/storage/emulated/0/Android/data/com.aditya25dev.alarm_demo/files/flutter_audio_recorder_shashank4.wav",
-//                    isLocal: true);
-//                print(isPlay);
-//              },
-//            ),
-//            RaisedButton(
-//              child: Text("Stop Recorded"),
-//              onPressed: () async {
-//                isPlay = await audioPlayer.stop();
-//                print(isPlay);
-//              },
-//            ),
             SizedBox(
               height: 5,
             ),
@@ -224,70 +143,83 @@ class _setAlarmState extends State<setAlarm> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ExpansionTile(
-//                            leading: Text("hello"),
                   title: Text("Select Days"),
                   children: <Widget>[
                     CheckboxListTile(
                       title: Text("Sunday"),
                       value: weekdays[0] == 1 ? true : false,
                       onChanged: (isTrue) {
-                        setState(() {
-                          weekdays[0] = isTrue ? 1 : 0;
-                        });
+                        setState(
+                          () {
+                            weekdays[0] = isTrue ? 1 : 0;
+                          },
+                        );
                       },
                     ),
                     CheckboxListTile(
                       title: Text("Monday"),
                       value: weekdays[1] == 1 ? true : false,
                       onChanged: (isTrue) {
-                        setState(() {
-                          weekdays[1] = isTrue ? 1 : 0;
-                        });
+                        setState(
+                          () {
+                            weekdays[1] = isTrue ? 1 : 0;
+                          },
+                        );
                       },
                     ),
                     CheckboxListTile(
                       title: Text("Tuesday"),
                       value: weekdays[2] == 1 ? true : false,
                       onChanged: (isTrue) {
-                        setState(() {
-                          weekdays[2] = isTrue ? 1 : 0;
-                        });
+                        setState(
+                          () {
+                            weekdays[2] = isTrue ? 1 : 0;
+                          },
+                        );
                       },
                     ),
                     CheckboxListTile(
                       title: Text("Wednesday"),
                       value: weekdays[3] == 1 ? true : false,
                       onChanged: (isTrue) {
-                        setState(() {
-                          weekdays[3] = isTrue ? 1 : 0;
-                        });
+                        setState(
+                          () {
+                            weekdays[3] = isTrue ? 1 : 0;
+                          },
+                        );
                       },
                     ),
                     CheckboxListTile(
                       title: Text("Thursday"),
                       value: weekdays[4] == 1 ? true : false,
                       onChanged: (isTrue) {
-                        setState(() {
-                          weekdays[4] = isTrue ? 1 : 0;
-                        });
+                        setState(
+                          () {
+                            weekdays[4] = isTrue ? 1 : 0;
+                          },
+                        );
                       },
                     ),
                     CheckboxListTile(
                       title: Text("Friday"),
                       value: weekdays[5] == 1 ? true : false,
                       onChanged: (isTrue) {
-                        setState(() {
-                          weekdays[5] = isTrue ? 1 : 0;
-                        });
+                        setState(
+                          () {
+                            weekdays[5] = isTrue ? 1 : 0;
+                          },
+                        );
                       },
                     ),
                     CheckboxListTile(
                       title: Text("Saturday"),
                       value: weekdays[6] == 1 ? true : false,
                       onChanged: (isTrue) {
-                        setState(() {
-                          weekdays[6] = isTrue ? 1 : 0;
-                        });
+                        setState(
+                          () {
+                            weekdays[6] = isTrue ? 1 : 0;
+                          },
+                        );
                       },
                     ),
                   ],
@@ -344,8 +276,7 @@ class _setAlarmState extends State<setAlarm> {
                                 print(_currentStatus);
                               });
                               _recorder.start();
-//                await SimplePermissions.requestPermission(
-//                    Permission.RecordAudio);
+
                               var recording =
                                   await _recorder.current(channel: 0);
                               print(recording.status);
@@ -424,94 +355,6 @@ class _setAlarmState extends State<setAlarm> {
     setState(() {
       widget.name.add(key);
       widget.time.add(value);
-    });
-  }
-}
-
-void printHello(int a) async {
-  print("Ima ");
-  print(a);
-  print(a.runtimeType);
-  var schedule = a.toString().substring(
-        4,
-      );
-  if (schedule == "7") {
-    print("$a is called");
-    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
-    var androids = AndroidInitializationSettings('bvplogo');
-    var iOS = IOSInitializationSettings();
-    var initializationSettings = InitializationSettings(androids, iOS);
-    flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-    );
-
-    var android = AndroidNotificationDetails(
-      "channelID",
-      "channelName",
-      "channelDescription",
-      playSound: true,
-      enableLights: true,
-      enableVibration: true,
-    );
-    var ios = await IOSNotificationDetails();
-    var platform = await NotificationDetails(android, ios);
-    await flutterLocalNotificationsPlugin.show(
-        0, "New Video is out", "Flutter Local Notification", platform,
-        payload: "You have clicked notification");
-    AudioPlayer audioPlayer2 = AudioPlayer();
-    var p =
-        "/storage/emulated/0/Android/data/com.aditya25dev.alarm_demo/files/" +
-            "${a.toString()}" +
-            ".wav";
-    print("I called $p");
-    await audioPlayer2.play(p, isLocal: true);
-    final DateTime now = DateTime.now();
-    await print("[$now] Hello, world! isolate function");
-  } else {
-    schedule.runes.forEach((int rune) async {
-      var character = new String.fromCharCode(rune);
-      if (DateTime.now().weekday == int.parse(character)) {
-        FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-            FlutterLocalNotificationsPlugin();
-        var androids = AndroidInitializationSettings('bvplogo');
-        var iOS = IOSInitializationSettings();
-        var initializationSettings = InitializationSettings(androids, iOS);
-        flutterLocalNotificationsPlugin.initialize(
-          initializationSettings,
-        );
-
-        var android = AndroidNotificationDetails(
-          "channelID",
-          "channelName",
-          "channelDescription",
-          playSound: true,
-          enableLights: true,
-          enableVibration: true,
-          color: Colors.green,
-          importance: Importance.Max,
-          priority: Priority.High,
-          largeIcon: DrawableResourceAndroidBitmap("bvplogo"),
-          styleInformation: BigPictureStyleInformation(
-            DrawableResourceAndroidBitmap("bvplogo"),
-          ),
-        );
-        var ios = await IOSNotificationDetails();
-        var platform = await NotificationDetails(android, ios);
-        await flutterLocalNotificationsPlugin.show(
-            a, "New Video is out", "Flutter Local Notification", platform,
-            payload: "You have clicked notification");
-        AudioPlayer audioPlayer2 = AudioPlayer();
-        var p =
-            "/storage/emulated/0/Android/data/com.aditya25dev.alarm_demo/files/" +
-                "${a.toString()}" +
-                ".wav";
-        print("I called $p");
-        await audioPlayer2.play(p, isLocal: true);
-        final DateTime now = DateTime.now();
-        await print("[$now] Hello, world! isolate function");
-      }
-      // print(character);
     });
   }
 }

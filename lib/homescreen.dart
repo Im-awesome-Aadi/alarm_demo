@@ -1,18 +1,17 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:alarm_demo/setAlarm.dart';
 import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class homes extends StatefulWidget {
-  homes({this.alarmtime, this.alarmlabel});
+class Homes extends StatefulWidget {
+  Homes({this.alarmtime, this.alarmlabel});
   final alarmtime;
   final alarmlabel;
   @override
-  _homesState createState() => _homesState();
+  _HomesState createState() => _HomesState();
 }
 
-class _homesState extends State<homes> {
+class _HomesState extends State<Homes> {
 //  AudioPlayer audioPlayer1 = AudioPlayer();
 
   @override
@@ -59,7 +58,7 @@ class _homesState extends State<homes> {
             () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (_) => new setAlarm(
+                  builder: (_) => new SetAlarm(
                     name: widget.alarmlabel,
                     time: widget.alarmtime,
                   ),
