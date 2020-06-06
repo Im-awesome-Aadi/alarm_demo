@@ -10,7 +10,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'callingNotification.dart';
-
+import 'systemSpecificPaths.dart';
 
 var filename =
     '/alarm_${DateTime.now().hour.toString() + DateTime.now().minute.toString()}';
@@ -24,6 +24,8 @@ class SetAlarm extends StatefulWidget {
 }
 
 class _SetAlarmState extends State<SetAlarm> {
+  Directory appDocDirectory;
+
   FlutterAudioRecorder _recorder;
   Recording _current;
   RecordingStatus _currentStatus = RecordingStatus.Unset;
@@ -251,15 +253,8 @@ class _SetAlarmState extends State<SetAlarm> {
                               String customPath =
                                   '/${givenAlarmTime.hour.toString() + givenAlarmTime.minute.toString()}' +
                                       aa;
-                              Directory appDocDirectory;
-                              if (Platform.isIOS) {
-                                appDocDirectory =
-                                    await getApplicationDocumentsDirectory();
-                              } else {
-                                appDocDirectory =
-                                    await getExternalStorageDirectory();
-                              }
 
+                              appDocDirectory = await systemSpecificFilePath();
                               customPath = appDocDirectory.path + customPath;
                               print("Custom path is ${customPath}");
                               _recorder = FlutterAudioRecorder(customPath,
