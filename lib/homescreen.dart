@@ -30,9 +30,9 @@ class _HomesState extends State<Homes> {
                   icon: Icon(Icons.cancel),
                   onPressed: () async {
                     SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    AndroidAlarmManager.cancel(widget.alarmtime[index]);
-                    prefs.remove(widget.alarmlabel[index]);
+                    await SharedPreferences.getInstance();
+                    AndroidAlarmManager.cancel(int.parse(widget.alarmtime[index]));
+                    prefs.remove(widget.alarmtime[index]);
                     widget.alarmlabel.removeAt(index);
                     widget.alarmtime.removeAt(index);
                     setState(() {});
@@ -42,12 +42,12 @@ class _HomesState extends State<Homes> {
                 style: TextStyle(color: Colors.black, fontSize: 18),
               ),
               subtitle: Text("Time " +
-                  widget.alarmtime[index].toString().substring(0, 2) +
+                  widget.alarmtime[index].substring(0, 2) +
                   ":" +
-                  "${widget.alarmtime[index].toString().substring(2, 4)}"),
-              children: dayList(widget.alarmtime[index].toString().substring(
-                    4,
-                  )),
+                  "${widget.alarmtime[index].substring(2, 4)}"),
+              children: dayList(widget.alarmtime[index].substring(
+                4,
+              )),
             );
           },
         ),
@@ -55,7 +55,7 @@ class _HomesState extends State<Homes> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(
-            () {
+                () {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => new SetAlarm(
