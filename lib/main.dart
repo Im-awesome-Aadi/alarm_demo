@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:alarm_demo/setAlarm.dart';
 import 'package:alarm_demo/homescreen.dart';
 
 void main() => runApp(MyApp());
 void printHello() async {
   print("Ima ");
   final DateTime now = DateTime.now();
-  await print("[$now] Hello, world! isolate function");
+  print("[$now] Hello, world! isolate function");
 }
 /*void main() async{
   final int helloAlarmID = 0;
@@ -52,31 +51,33 @@ class _MyHomePageState extends State<MyHomePage> {
 
   initial() async {
     final prefs = await SharedPreferences.getInstance();
-    final prefKeys = await prefs.getKeys();
+    final prefKeys = prefs.getKeys();
     if (prefKeys.isEmpty) {
       print("NO alram");
     }
     if (prefKeys.isNotEmpty) {
       for (String i in prefKeys) {
-        final value = await prefs.getInt(i);
-        await alarmlabel.add(i);
-        await alarmtime.add(value);
+        final value = prefs.getInt(i);
+        alarmlabel.add(i);
+        alarmtime.add(value);
 
         print(i);
         print(value);
       }
     }
 
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) =>
-            new homes(alarmtime: alarmtime, alarmlabel: alarmlabel)));
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => new Homes(alarmtime: alarmtime, alarmlabel: alarmlabel),
+      ),
+    );
   }
 
   void _incrementCounter() async {
     print("i st");
     await AndroidAlarmManager.initialize();
     await AndroidAlarmManager.oneShotAt(
-        new DateTime(0, 0, 0, 0, 5, 0, 0), 0, await printHello);
+        new DateTime(0, 0, 0, 0, 5, 0, 0), 0, printHello);
   }
 
   @override
