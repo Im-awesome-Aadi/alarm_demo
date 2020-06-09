@@ -1,8 +1,14 @@
+import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
+import 'package:path_provider/path_provider.dart';
+import 'dart:convert';
 void callingNotification(int uniqueID) async {
+  final prefs = await SharedPreferences.getInstance();
+  final value = prefs.getString(uniqueID.toString());
+  var temp = json.decode(value);
   print("Ima ");
   print(uniqueID);
   print(uniqueID.runtimeType);
@@ -11,17 +17,18 @@ void callingNotification(int uniqueID) async {
       );
   if (schedule == "7") {
     //For Daily Alarm
+    print(schedule);
     print("$uniqueID is called");
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
-    var initializationSettings = notificationInitializationSettings();
+    var initializationSettings =  notificationInitializationSettings();
     flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
     );
 
-    var platform = notificationSettings();
+    var platform = await notificationSettings(temp["image"]);
     await flutterLocalNotificationsPlugin.show(
-        0, "New Video is out", "Flutter Local Notification", platform,
+        0, "Fitness traker", "${temp["label"]}", platform,
         payload: "You have clicked notification");
     AudioPlayer audioPlayer2 = AudioPlayer();
     var audioFilePath =
@@ -31,13 +38,14 @@ void callingNotification(int uniqueID) async {
     print("I called $audioFilePath");
     await audioPlayer2.play(audioFilePath, isLocal: true);
     final DateTime now = DateTime.now();
-    print(
-        "[$now] Hello, world! isolate function"); //Checking this section of code is working or not.
   } else {
+    print(schedule);
+    print("not laone");
     schedule.runes.forEach((int rune) async {
       var character = new String.fromCharCode(rune);
       //Checking for selected days for alarm
       if (DateTime.now().weekday == int.parse(character)) {
+        print(character);
         FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
             FlutterLocalNotificationsPlugin();
 
@@ -46,9 +54,9 @@ void callingNotification(int uniqueID) async {
           initializationSettings,
         );
 
-        var platform = notificationSettings();
-        await flutterLocalNotificationsPlugin.show(uniqueID, "New Video is out",
-            "Flutter Local Notification", platform,
+        var platform = await notificationSettings(temp["image"]);
+        await flutterLocalNotificationsPlugin.show(
+            0, "Fitness traker", "${temp["label"]}", platform,
             payload: "You have clicked notification");
         AudioPlayer audioPlayer2 = AudioPlayer();
         var audioFilePath =
@@ -75,7 +83,14 @@ InitializationSettings notificationInitializationSettings() {
   return initializationSettings;
 }
 
-NotificationDetails notificationSettings() {
+Future  notificationSettings(img) async{
+  print(img);
+  Directory  appDocDirectory;
+  appDocDirectory = await getExternalStorageDirectory();
+  var a= appDocDirectory.path + '/Pictures/D.png';
+  print(a);
+
+
   var android = AndroidNotificationDetails(
     "channelID",
     "channelName",
@@ -86,9 +101,9 @@ NotificationDetails notificationSettings() {
     color: Colors.green,
     importance: Importance.Max,
     priority: Priority.High,
-    largeIcon: DrawableResourceAndroidBitmap("bvplogo"),
+    largeIcon: FilePathAndroidBitmap(img),
     styleInformation: BigPictureStyleInformation(
-      DrawableResourceAndroidBitmap("bvplogo"), //Big Picture Image
+      FilePathAndroidBitmap(img), //Big Picture Image
     ),
   );
   var ios = IOSNotificationDetails();
