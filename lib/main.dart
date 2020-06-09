@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:alarm_demo/homescreen.dart';
-
+import 'dart:convert';
+import 'package:permission_handler/permission_handler.dart';
 void main() => runApp(MyApp());
 void printHello() async {
   print("Ima ");
@@ -13,7 +14,6 @@ void printHello() async {
   final int helloAlarmID = 0;
   await AndroidAlarmManager.initialize();
   runApp(MyApp());
-
 }*/
 
 class MyApp extends StatelessWidget {
@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
+
   final String title;
 
   @override
@@ -50,6 +51,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   initial() async {
+
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.microphone,
+      Permission.speech,
+
+    ].request();
     final prefs = await SharedPreferences.getInstance();
     final prefKeys = prefs.getKeys();
     if (prefKeys.isEmpty) {
@@ -57,9 +64,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     if (prefKeys.isNotEmpty) {
       for (String i in prefKeys) {
-        final value = prefs.getInt(i);
-        alarmlabel.add(i);
-        alarmtime.add(value);
+        final value = prefs.getString(i);
+        var info=json.decode(value);
+        alarmlabel.add(info['label']);
+        alarmtime.add(i);
 
         print(i);
         print(value);
@@ -73,12 +81,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _incrementCounter() async {
-    print("i st");
-    await AndroidAlarmManager.initialize();
-    await AndroidAlarmManager.oneShotAt(
-        new DateTime(0, 0, 0, 0, 5, 0, 0), 0, printHello);
-  }
 
   @override
   Widget build(BuildContext context) {
