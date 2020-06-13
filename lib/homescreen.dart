@@ -4,9 +4,11 @@ import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Homes extends StatefulWidget {
-  Homes({this.alarmtime, this.alarmlabel});
+  Homes({this.alarmtime, this.alarmlabel,this.temp});
   final alarmtime;
   final alarmlabel;
+  final temp;
+
   @override
   _HomesState createState() => _HomesState();
 }
@@ -21,36 +23,46 @@ class _HomesState extends State<Homes> {
       appBar: AppBar(
         title: Text('Notifications'),
       ),
-      body: Center(
-        child: ListView.builder(
-          itemCount: widget.alarmtime.length,
-          itemBuilder: (context, index) {
-            return ExpansionTile(
-              leading: IconButton(
-                  icon: Icon(Icons.cancel),
-                  onPressed: () async {
-                    SharedPreferences prefs =
-                    await SharedPreferences.getInstance();
-                    AndroidAlarmManager.cancel(int.parse(widget.alarmtime[index]));
-                    prefs.remove(widget.alarmtime[index]);
-                    widget.alarmlabel.removeAt(index);
-                    widget.alarmtime.removeAt(index);
-                    setState(() {});
-                  }),
-              title: Text(
-                widget.alarmlabel[index].toString(),
-                style: TextStyle(color: Colors.black, fontSize: 18),
+
+      body: Column(
+        children: <Widget>[
+          Text('${widget.temp}'),
+          Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 500),
+              child: ListView.builder(
+                itemCount: widget.alarmlabel.length,
+                itemBuilder: (context, index) {
+                  return ExpansionTile(
+                    leading: IconButton(
+                        icon: Icon(Icons.cancel),
+                        onPressed: () async {
+                          SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                          AndroidAlarmManager.cancel(int.parse(widget.alarmtime[index]));
+                          prefs.remove(widget.alarmtime[index]);
+                          widget.alarmlabel.removeAt(index);
+                          widget.alarmtime.removeAt(index);
+                          setState(() {});
+                        }),
+                    title: Text(
+                      widget.alarmlabel[index].toString(),
+                      style: TextStyle(color: Colors.black, fontSize: 18),
+                    ),
+                    subtitle: Text("Time " +
+                        widget.alarmtime[index].substring(0, 2) +
+                        ":" +
+                        "${widget.alarmtime[index].substring(2, 4)}"),
+                    children: dayList(widget.alarmtime[index].substring(
+                      4,
+                    )),
+                  );
+                },
               ),
-              subtitle: Text("Time " +
-                  widget.alarmtime[index].substring(0, 2) +
-                  ":" +
-                  "${widget.alarmtime[index].substring(2, 4)}"),
-              children: dayList(widget.alarmtime[index].substring(
-                4,
-              )),
-            );
-          },
-        ),
+            ),
+          ),
+        ],
+
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
