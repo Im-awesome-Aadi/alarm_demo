@@ -24,9 +24,8 @@ class _HomesState extends State<Homes> {
         title: Text('Notifications'),
       ),
 
-      body: Column(
+      body: ListView(
         children: <Widget>[
-          Text('${widget.temp}'),
           Center(
             child: ConstrainedBox(
               constraints: BoxConstraints(maxHeight: 500),
