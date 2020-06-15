@@ -58,7 +58,6 @@ class _SetAlarmState extends State<SetAlarm> {
     print(_image);
   }
   Future getCameraImage() async {
-
     final pickedFile = await picker.getImage(source: ImageSource.camera);
 
     setState(() {
@@ -66,24 +65,15 @@ class _SetAlarmState extends State<SetAlarm> {
     });
 
 
-    Directory  appDocDirectory;
+    Directory appDocDirectory;
     appDocDirectory = await getExternalStorageDirectory();
-    imageLocation= appDocDirectory.path + '/Pictures/' +  DateTime.now().toIso8601String() +'.jpg';
+    imageLocation =
+        appDocDirectory.path + '/Pictures/' + DateTime.now().toIso8601String() +
+            '.jpg';
     print(imageLocation);
     await _image.copy(imageLocation);
     print(_image);
   }
-  /*Future onSelectNotification(String payload) async {
-    debugPrint("payload:$payload");
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text("Payload"),
-        content: Text("$payload"),
-      ),
-    );
-  }*/
-
   void setTimer(DateTime givenTime) async {
     print(givenTime.difference(DateTime.now()));
     int id = int.parse(
@@ -92,22 +82,6 @@ class _SetAlarmState extends State<SetAlarm> {
 
     print(givenTime.hour);
     print(givenTime.minute);
-  /*  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    var androids = AndroidInitializationSettings('bvplogo'); //Notification Icon
-    var iOS = IOSInitializationSettings();
-    var initializationSettings = InitializationSettings(androids, iOS);
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings,);
-
-    var androidPlatformChannelSpecifics =
-    AndroidNotificationDetails('repeating channel id',
-        'repeating channel name', 'repeating description');
-    var iOSPlatformChannelSpecifics =
-    IOSNotificationDetails();
-    var platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.periodicallyShow(0, 'repeating title',
-        'repeating body', RepeatInterval.EveryMinute, platformChannelSpecifics);
-*/
 
    await AndroidAlarmManager.initialize();
     await AndroidAlarmManager.periodic(
@@ -319,7 +293,7 @@ var alramlabel;
                 print(info);
                 if (label.text != "") {
                   setTimer(givenAlarmTime);
-                  await addAlarm(
+                   addAlarm(
                       '${givenAlarmTime.hour.toString().padLeft(2,'0') + givenAlarmTime.minute.toString().padLeft(2,'0')}' + conv(weekdays)
                       , info);
                   Navigator.of(context).pop();

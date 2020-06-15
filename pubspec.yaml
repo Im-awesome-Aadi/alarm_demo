@@ -27,8 +27,8 @@ dependencies:
   intl: ^0.16.1
   http: ^0.12.1
   path_provider: ^1.6.8
-  image_picker: ^0.6.6+4
-
+  image_picker: ^0.6.7+1
+  permission_handler: ^5.0.1
 
   audioplayers: ^0.14.2
   flutter_audio_recorder: ^0.5.5
