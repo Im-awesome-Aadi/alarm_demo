@@ -8,12 +8,13 @@ import 'dart:convert';
 import 'package:alarm_demo/systemSpecificPaths.dart';
 
 void callingNotification(int uniqueID) async {
-  final prefs = await SharedPreferences.getInstance();
-  final value = prefs.getString(uniqueID.toString());
-  var temp = json.decode(value);
   print("Ima ");
   print(uniqueID);
   print(uniqueID.runtimeType);
+  final prefs = await SharedPreferences.getInstance();
+  final value = prefs.getString(uniqueID.toString());
+  var temp = json.decode(value);
+
   var schedule = uniqueID.toString().substring(
         4,
       );
@@ -23,7 +24,7 @@ void callingNotification(int uniqueID) async {
     print("$uniqueID is called");
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
-    var initializationSettings =  notificationInitializationSettings();
+    var initializationSettings = notificationInitializationSettings();
     flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
     );
@@ -37,15 +38,13 @@ void callingNotification(int uniqueID) async {
     //This code is for playing audio
     AudioPlayer audioPlayer2 = AudioPlayer();
     Directory appDocDirectory;
-    appDocDirectory = await systemSpecificFilePath();   
+    appDocDirectory = await systemSpecificFilePath();
     var audioFilePath =
-        appDocDirectory.path +
-            "/${uniqueID.toString()}" +
-            ".wav";
+        appDocDirectory.path + "/${uniqueID.toString()}" + ".wav";
     print("I called $audioFilePath");
     await audioPlayer2.play(audioFilePath, isLocal: true);
     final DateTime now = DateTime.now();
-  } 
+  }
   // Ignore this else condtion for a while
   else {
     schedule.runes.forEach((int rune) async {
@@ -90,8 +89,7 @@ InitializationSettings notificationInitializationSettings() {
   return initializationSettings;
 }
 
-Future  notificationSettings(img) async{
-
+Future notificationSettings(img) async {
   var android = AndroidNotificationDetails(
     "channelID",
     "channelName",
@@ -111,4 +109,3 @@ Future  notificationSettings(img) async{
   var platform = NotificationDetails(android, ios);
   return platform;
 }
-

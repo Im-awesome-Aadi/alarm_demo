@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:alarm_demo/homescreen.dart';
 import 'dart:convert';
 import 'package:permission_handler/permission_handler.dart';
+
 void main() => runApp(MyApp());
 void printHello() async {
   print("Ima ");
@@ -34,7 +35,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
-
   final String title;
 
   @override
@@ -51,11 +51,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   initial() async {
-
     Map<Permission, PermissionStatus> statuses = await [
       Permission.microphone,
       Permission.speech,
-
     ].request();
     final prefs = await SharedPreferences.getInstance();
     final prefKeys = prefs.getKeys();
@@ -65,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (prefKeys.isNotEmpty) {
       for (String i in prefKeys) {
         final value = prefs.getString(i);
-        var info=json.decode(value);
+        var info = json.decode(value);
         alarmlabel.add(info['label']);
         alarmtime.add(i);
 
@@ -80,7 +78,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {

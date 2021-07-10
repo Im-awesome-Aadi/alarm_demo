@@ -39,24 +39,27 @@ class _SetAlarmState extends State<SetAlarm> {
     super.initState();
     //   initRecorder();
   }
+
   var _image;
   final picker = ImagePicker();
   Future getGalleryImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
 
-      final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    setState(() {
+      _image = (File(pickedFile.path));
+    });
 
-      setState(() {
-        _image = (File(pickedFile.path));
-      });
-
-
-    Directory  appDocDirectory;
+    Directory appDocDirectory;
     appDocDirectory = await getExternalStorageDirectory();
-    imageLocation= appDocDirectory.path + '/Pictures/' +  DateTime.now().toIso8601String() +'.jpg';
+    imageLocation = appDocDirectory.path +
+        '/Pictures/' +
+        DateTime.now().toIso8601String() +
+        '.jpg';
     print(imageLocation);
     await _image.copy(imageLocation);
     print(_image);
   }
+
   Future getCameraImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
 
@@ -64,30 +67,28 @@ class _SetAlarmState extends State<SetAlarm> {
       _image = (File(pickedFile.path));
     });
 
-
     Directory appDocDirectory;
     appDocDirectory = await getExternalStorageDirectory();
-    imageLocation =
-        appDocDirectory.path + '/Pictures/' + DateTime.now().toIso8601String() +
-            '.jpg';
+    imageLocation = appDocDirectory.path +
+        '/Pictures/' +
+        DateTime.now().toIso8601String() +
+        '.jpg';
     print(imageLocation);
     await _image.copy(imageLocation);
     print(_image);
   }
+
   void setTimer(DateTime givenTime) async {
-    print(givenTime.difference(DateTime.now()));
     int id = int.parse(
-        '${givenAlarmTime.hour.toString().padLeft(2,'0') + givenAlarmTime.minute.toString().padLeft(2,'0')}' + conv(weekdays)
-    );
+        '${givenAlarmTime.hour.toString().padLeft(2, '0') + givenAlarmTime.minute.toString().padLeft(2, '0')}' +
+            conv(weekdays));
+    print(id);
 
-    print(givenTime.hour);
-    print(givenTime.minute);
-
-   await AndroidAlarmManager.initialize();
+    await AndroidAlarmManager.initialize();
     await AndroidAlarmManager.periodic(
       new Duration(hours: 24
 //        seconds: givenTime.difference(DateTime.now()).inSeconds,
-      ),
+          ),
       id,
       callingNotification,
       startAt: DateTime(DateTime.now().year, DateTime.now().month,
@@ -95,13 +96,13 @@ class _SetAlarmState extends State<SetAlarm> {
     );
   }
 
-var alramlabel;
+  var alramlabel;
   int isPlay;
   bool isClicked = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('SET ALARM'),
       ),
@@ -110,13 +111,9 @@ var alramlabel;
         child: ListView(
           children: <Widget>[
             TextField(
-              onChanged: (input){
-
-                alramlabel=input;
-                setState(() {
-
-                });
-                print(alramlabel);
+              onChanged: (input) {
+                alramlabel = input;
+                setState(() {});
               },
               controller: label,
               textInputAction: TextInputAction.done,
@@ -152,7 +149,7 @@ var alramlabel;
                             givenAlarmTime ?? DateTime.now()),
                       );
                       setState(
-                            () {
+                        () {
                           givenAlarmTime =
                               DateTimeField.combine(DateTime.now(), time);
 
@@ -195,60 +192,59 @@ var alramlabel;
                       icon: Icon(Icons.mic),
                       onPressed: isClicked
                           ? () async {
-                        String customPath =
-                            '/${givenAlarmTime.hour.toString().padLeft(2,'0') + givenAlarmTime.minute.toString().padLeft(2,'0')}' +
-                                conv(weekdays);
+                              String customPath =
+                                  '/${givenAlarmTime.hour.toString().padLeft(2, '0') + givenAlarmTime.minute.toString().padLeft(2, '0')}' +
+                                      conv(weekdays);
 
-                        appDocDirectory = await systemSpecificFilePath();
-                        customPath = appDocDirectory.path + customPath;
-                        print("Custom path is ${customPath}");
-                        _recorder = FlutterAudioRecorder(customPath,
-                            audioFormat: AudioFormat.WAV);
+                              appDocDirectory = await systemSpecificFilePath();
+                              customPath = appDocDirectory.path + customPath;
 
-                        await _recorder.initialized;
-                        // after initialization
-                        var current = await _recorder.current(channel: 0);
-                        print(current);
-                        // should be "Initialized", if all working fine
-                        setState(() {
-                          _current = current;
-                          _currentStatus = current.status;
-                          print(_currentStatus);
-                        });
-                        _recorder.start();
+                              _recorder = FlutterAudioRecorder(customPath,
+                                  audioFormat: AudioFormat.WAV);
 
-                        var recording =
-                        await _recorder.current(channel: 0);
-                        print(recording.status);
-                        showDialog(
-                          context: context,
-                          builder: (_) => AlertDialog(
-                            title: Text("Recording Started"),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                CircleAvatar(
-                                  child: IconButton(
-                                    icon: Icon(Icons.stop),
-                                    onPressed: () async {
-                                      _recorder.stop();
-                                      var recording = await _recorder
-                                          .current(channel: 0);
-                                      print(recording.status);
-                                      Navigator.pop(context);
-                                    },
+                              await _recorder.initialized;
+                              // after initialization
+                              var current = await _recorder.current(channel: 0);
+                              print(current);
+                              // should be "Initialized", if all working fine
+                              setState(() {
+                                _current = current;
+                                _currentStatus = current.status;
+                                print(_currentStatus);
+                              });
+                              _recorder.start();
+
+                              var recording =
+                                  await _recorder.current(channel: 0);
+                              print(recording.status);
+                              showDialog(
+                                context: context,
+                                builder: (_) => AlertDialog(
+                                  title: Text("Recording Started"),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      CircleAvatar(
+                                        child: IconButton(
+                                          icon: Icon(Icons.stop),
+                                          onPressed: () async {
+                                            _recorder.stop();
+                                            var recording = await _recorder
+                                                .current(channel: 0);
+                                            print(recording.status);
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 26,
+                                      ),
+                                      Text("Click Here to Stop"),
+                                    ],
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 26,
-                                ),
-                                Text("Click Here to Stop"),
-                              ],
-                            ),
-                          ),
-                        );
-                        print("AlartBox Out");
-                      }
+                              );
+                            }
                           : null,
                     ),
                   ),
@@ -263,8 +259,8 @@ var alramlabel;
               height: 12,
             ),
             RaisedButton(
-              onPressed: () async{
-                  await getGalleryImage();
+              onPressed: () async {
+                await getGalleryImage();
               },
               child: Text("Gallery"),
             ),
@@ -272,30 +268,35 @@ var alramlabel;
               height: 12,
             ),
             RaisedButton(
-              onPressed: () async{
+              onPressed: () async {
                 await getCameraImage();
               },
               child: Text("Camera"),
             ),
             Container(
               height: 50,
-              child: _image==null?SizedBox.shrink():Image.file( _image,),
+              child: _image == null
+                  ? SizedBox.shrink()
+                  : Image.file(
+                      _image,
+                    ),
             ),
             FlatButton(
               textColor: Colors.white,
               color: Colors.blue,
               onPressed: () async {
-                var info="""
+                var info = """
                 {  "label" : "${alramlabel}",
                   "image" : "${imageLocation}"
                  }
                 """;
-                print(info);
+
                 if (label.text != "") {
                   setTimer(givenAlarmTime);
-                   addAlarm(
-                      '${givenAlarmTime.hour.toString().padLeft(2,'0') + givenAlarmTime.minute.toString().padLeft(2,'0')}' + conv(weekdays)
-                      , info);
+                  addAlarm(
+                      '${givenAlarmTime.hour.toString().padLeft(2, '0') + givenAlarmTime.minute.toString().padLeft(2, '0')}' +
+                          conv(weekdays),
+                      info);
                   Navigator.of(context).pop();
                 }
               },
@@ -312,15 +313,15 @@ var alramlabel;
 
   addAlarm(key, value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var temp =json.decode(value);
-    print(value);
-   print(temp);
-   setState(() {
+    var temp = json.decode(value);
+
+    print(temp);
+    print(key);
+    setState(() {
       widget.name.add('${temp["label"]}');
       widget.time.add(key);
     });
     prefs.setString(key, value);
-
   }
 }
 

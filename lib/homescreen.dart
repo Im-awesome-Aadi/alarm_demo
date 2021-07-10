@@ -4,7 +4,7 @@ import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Homes extends StatefulWidget {
-  Homes({this.alarmtime, this.alarmlabel,this.temp});
+  Homes({this.alarmtime, this.alarmlabel, this.temp});
   final alarmtime;
   final alarmlabel;
   final temp;
@@ -19,7 +19,7 @@ class _HomesState extends State<Homes> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('Notifications'),
       ),
@@ -37,8 +37,9 @@ class _HomesState extends State<Homes> {
                         icon: Icon(Icons.cancel),
                         onPressed: () async {
                           SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                          AndroidAlarmManager.cancel(int.parse(widget.alarmtime[index]));
+                              await SharedPreferences.getInstance();
+                          AndroidAlarmManager.cancel(
+                              int.parse(widget.alarmtime[index]));
                           prefs.remove(widget.alarmtime[index]);
                           widget.alarmlabel.removeAt(index);
                           widget.alarmtime.removeAt(index);
@@ -61,12 +62,11 @@ class _HomesState extends State<Homes> {
             ),
           ),
         ],
-
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(
-                () {
+            () {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => new SetAlarm(
